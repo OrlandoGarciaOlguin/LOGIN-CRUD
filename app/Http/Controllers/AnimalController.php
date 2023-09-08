@@ -148,14 +148,18 @@ class AnimalController extends Controller
     {
         $ultimosAnimales = Animal::latest()->take(5)->get();
         
-        // $ultimosAnimales = Animal::all()
-        // ->orderBy('nombre', 'dec')
-        // ->take(5)
-        // ->get(); 
+        $ultimosAnimales = Animal::all()
+        ->orderBy('nombre', 'dec')
+        ->take(5)
+        ->get(); 
+
+        $herbivoros = Animal::where('especie_id', 2) 
+            ->orderBy('nombre', 'asc')
+            ->get();
 
         //return ($ultimosAnimales);
 
-        return view("animals.dashboard", compact('ultimosAnimales'));
+        return view("animals.dashboard", compact('ultimosAnimales','herbivoros'));
     }
 
 }
