@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Animal;
+use App\Models\Habitat;
+use App\Models\Especie;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AnimalsExport;
 
 class HomeController extends Controller
 {
@@ -25,4 +30,6 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
+    
 }

@@ -6,6 +6,11 @@ use App\Models\Animal;
 use App\Models\Habitat;
 use App\Models\Especie;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Concerns\WithFileType;
+use App\Exports\AnimalsExport;
+use App\Imports\AnimalsImport;
+
 
 class AnimalController extends Controller
 {
@@ -15,7 +20,8 @@ class AnimalController extends Controller
     public function index()
     {
         $animal = animal::all();
-        return view('animals.index', compact('animal'));
+        //return view('animals.index', compact('animal'));
+        return view('animals.index', compact('animal'), ['animals.index' => animal::paginate()]);
     }
 
     /**
@@ -61,7 +67,7 @@ class AnimalController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request)
+    public function show($id)
     {
         // $carnivoros = Animal::where('especie_id', $especie_id)
         // ->where('especie_id', '1')
@@ -81,7 +87,7 @@ class AnimalController extends Controller
 
         //$animals = Animal::with('especie')->where('especie_id', '1')->select('nombre', 'latin', 'especie_id')->get();
 
-        $carnivoros = Animal::where('especie_id', 1) 
+             $carnivoros = Animal::where('especie_id', 1) 
             ->orderBy('nombre', 'asc')
             ->get();
             
@@ -89,7 +95,10 @@ class AnimalController extends Controller
             ->orderBy('nombre', 'asc')
             ->get(); 
 
-        return view('animals.show', compact('carnivoros','herbivoros'));
+            $animal = Animal::find($id);
+
+        return view('animals.show', compact('carnivoros','herbivoros','animal'));
+        //echo json_encode($animal);
 
     }
 
@@ -144,12 +153,16 @@ class AnimalController extends Controller
         return redirect("animal");
     }
 
-    public function dashboard()
+     /**
+     * Muestra los carnivoros e hervivoros
+     */
+
+    public function dashboard(Animal $ultimosAnimales)
     {
         $ultimosAnimales = Animal::latest()->take(5)->get();
         
-        $ultimosAnimales = Animal::all()
-        ->orderBy('nombre', 'dec')
+        $ultimosAnimales = Animal::
+        orderBy('nombre', 'desc')
         ->take(5)
         ->get(); 
 
@@ -159,7 +172,36 @@ class AnimalController extends Controller
 
         //return ($ultimosAnimales);
 
-        return view("animals.dashboard", compact('ultimosAnimales','herbivoros'));
+        return view("animals.dashboard", compact('ultimosAnimales','herbivoros')); 
+        
     }
 
+    public function collection()
+    {
+       return Excel::download(new AnimalsExport, 'animals.xlsx');        
+    }
+
+    public function importar(){        
+
+        // try {
+        //     // Especifica la clase de importación y el archivo Excel que deseas importar
+        //     Excel::import(new AnimalsImport, 'prueba.xlsx');
+    
+        //     // Procesa el archivo Excel utilizando la clase de importación personalizada
+        //     return back()->with('success', 'Excel importado con éxito.');
+        // } catch (\Exception $e) {
+        //     // En caso de error, redirecciona de vuelta con un mensaje de error
+        //     return back()->with('error', 'Error al importar el Excel: ' . $e->getMessage());
+        // }
+
+        //Excel::import(new AnimalsImport, $request->file('Prueba.xlsx')->store('temp'));
+        Excel::import(new AnimalsImport, 'prueba.xlsx');
+        //Excel::import(new AnimalsImport)->import('prueba.xlsx', null, \Maatwebsite\Excel\Excel::XLSX);
+        // return redirect()->back();   
+        
+        //Excel::import(new AnimalsImport, 'Prueba.xlsx');
+
+        return redirect('/')->with('success');
+    
+    }
 }
