@@ -8,6 +8,8 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
+
+
 class AnimalsImport implements ToModel, WithValidation
 {
     /**
@@ -20,6 +22,8 @@ class AnimalsImport implements ToModel, WithValidation
 
     public function model(array $row)
     {
+        
+
         return new Animal([
             'id'     => $row['id'],
            'nombre'    => $row['nombre'], 

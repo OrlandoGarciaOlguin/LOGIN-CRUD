@@ -181,7 +181,7 @@ class AnimalController extends Controller
        return Excel::download(new AnimalsExport, 'animals.xlsx');        
     }
 
-    public function importar(){        
+    public function importar(Request $request){        
 
         // try {
         //     // Especifica la clase de importación y el archivo Excel que deseas importar
@@ -194,14 +194,30 @@ class AnimalController extends Controller
         //     return back()->with('error', 'Error al importar el Excel: ' . $e->getMessage());
         // }
 
-        //Excel::import(new AnimalsImport, $request->file('Prueba.xlsx')->store('temp'));
-        Excel::import(new AnimalsImport, 'prueba.xlsx');
-        //Excel::import(new AnimalsImport)->import('prueba.xlsx', null, \Maatwebsite\Excel\Excel::XLSX);
-        // return redirect()->back();   
-        
-        //Excel::import(new AnimalsImport, 'Prueba.xlsx');
+          
+        // Verifica si se ha enviado un archivo en la solicitud
+    if ($request->hasFile('file')) {
+        // Obtiene la ruta temporal del archivo subido
+        $filePath = $request->file('file')->getRealPath();
 
-        return redirect('/')->with('success');
+        // Importa los datos desde el archivo Excel
+        Excel::import(new AnimalsImport, $filePath);
+
+        // Retorna una respuesta, por ejemplo, redirecciona de vuelta con un mensaje
+        return back()->with('success', 'Archivo Excel importado exitosamente.');
+    }
+
+    // Maneja el caso en el que no se haya enviado un archivo en la solicitud
+    return back()->with('error', 'No se ha enviado ningún archivo para importar.');        
+
+        // Excel::import(new AnimalsImport, $request->file('file')->store('temp'));
+
+        // return back();
+
+        //Excel::import(new AnimalsImport,request()->file('file'));
+        //Excel::import('xlsx', new AnimalsImport);
+
+        //return back();
     
     }
 }
